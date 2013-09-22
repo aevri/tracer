@@ -73,7 +73,7 @@ void colourful_square() {
     }
 }
 
-Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
+Vec3 sample_sky(const Vec3::InParam position, const Vec3::InParam direction) {
     const Vec3 forward{0.0f, 0.0f, 1.0f};
     const Vec3 right{1.0f, 0.0f, 0.0f};
     const Vec3 up{0.0f, 1.0f, 0.0f};
@@ -83,6 +83,10 @@ Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
     const float blue = 180.0f + 64.0f * dot(direction, up);
 
     return Vec3 {red, green, blue};
+}
+
+Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
+    return sample_sky(position, direction);
 }
 
 void draw_scene(const int image_width, const int image_height) {
