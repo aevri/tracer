@@ -1,5 +1,5 @@
 tracer: main.cpp
-	gcc main.cpp -o tracer
+	g++ main.cpp -o tracer -Wall
 
 test: tracer
 	./tracer > out.ppm
