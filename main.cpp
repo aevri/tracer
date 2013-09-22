@@ -23,9 +23,7 @@ float distance2d(float x, float y) {
     return sqrt(x*x + y*y);
 }
 
-int main() {
-    printf("P6 512 512 255 ");
-
+void colourful_square() {
     Vec3 colour(0.0f, 0.0f, 0.0f);
     float increment = 255.f / 512.f;
 
@@ -38,4 +36,9 @@ int main() {
             printf("%c%c%c", int(colour.x), int(colour.y), int(colour.z));
         }
     }
+}
+
+int main() {
+    printf("P6 512 512 255 ");
+    colourful_square();
 }
