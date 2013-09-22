@@ -102,7 +102,7 @@ void draw_scene(const int image_width, const int image_height) {
                 0.0f};
 
             const Vec3 pixel_direction = normalised(
-                camera_forward + pixel_offset);
+                camera_forward*image_height + pixel_offset);
 
             const Vec3 colour = sample(camera_pos, pixel_direction);
 
