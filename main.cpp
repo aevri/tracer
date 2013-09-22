@@ -78,9 +78,9 @@ Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
     const Vec3 right{1.0f, 0.0f, 0.0f};
     const Vec3 up{0.0f, 1.0f, 0.0f};
 
-    const float red = 64.0f;
+    const float red = 32.0f;
     const float green = 128.0f;
-    const float blue = 127.0f + 127.0f * dot(direction, up);
+    const float blue = 180.0f + 64.0f * dot(direction, up);
 
     return Vec3 {red, green, blue};
 }
