@@ -25,6 +25,14 @@ Vec3 operator+(Vec3::InParam left, Vec3::InParam right) {
     };
 }
 
+Vec3 operator-(Vec3::InParam left, Vec3::InParam right) {
+    return Vec3{
+        left.x - right.x,
+        left.y - right.y,
+        left.z - right.z
+    };
+}
+
 Vec3 operator*(Vec3::InParam v, const float scale) {
     return Vec3 {
         v.x * scale,
@@ -85,7 +93,35 @@ Vec3 sample_sky(const Vec3::InParam position, const Vec3::InParam direction) {
     return Vec3 {red, green, blue};
 }
 
+Vec3 sample_ground(
+        const Vec3::InParam position,
+        const Vec3::InParam direction)
+{
+    const float inverse_square_scale = 0.1f;
+    const int x = fabs(position.x * inverse_square_scale);
+    const int y = fabs(position.z * inverse_square_scale);
+
+    if ((x%2) ^ (y%2)) {
+        return Vec3 {128.0f, 64.0f, 32.0f};
+    } else {
+        return Vec3 {32.0f, 64.0f, 128.0f};
+    }
+}
+
 Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
+
+    // check for collision against ground
+    const Vec3 ground_point(0.0f, 0.0f, 0.0f);
+    const Vec3 ground_inverse_normal(0.0f, -1.0f, 0.0f);
+    const Vec3 to_ground {ground_point - position};
+    if (dot(to_ground, direction) > 0.0f) {
+        const float distance_to_ground {dot(to_ground, ground_inverse_normal)};
+        const float dot_to_ground {dot(direction, ground_inverse_normal)};
+        const float distance {distance_to_ground / dot_to_ground};
+        const Vec3 ground_intersection {position + direction * distance};
+        return sample_ground(ground_intersection, direction);
+    }
+
     return sample_sky(position, direction);
 }
 
