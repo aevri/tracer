@@ -100,6 +100,21 @@ Vec3 sample_ground(
     }
 }
 
+Vec3 sample_sphere(
+        const Vec3::InParam position,
+        const Vec3::InParam normal,
+        const Vec3::InParam direction)
+{
+    const Vec3 world_up {0.0f, 1.0f, 0.0f};
+    const float dot_up {dot(normal, world_up)};
+
+    const Vec3 half {0.5f, 0.5f, 0.5f};
+    const Vec3 color {(normal * 0.5f + half) * 255.0f};
+    const Vec3 half_color {color * 0.5f};
+    return lerp(half_color, color, dot_up);
+}
+
+
 Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
 
     // check for collision against sphere
@@ -120,9 +135,7 @@ Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
 
         // sample the sphere
         const Vec3 normal {normalised(intersection - sphere_point)};
-        const Vec3 half {0.5f, 0.5f, 0.5f};
-        const Vec3 color {(normal * 0.5f + half) * 255.0f};
-        return color;
+        return sample_sphere(intersection, normal, direction);
     }
 
     // check for collision against ground
