@@ -66,6 +66,10 @@ Vec3 normalised(Vec3::InParam in) {
     return in * scale;
 }
 
+Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) {
+    return (from * (1.0f - t) + (to * t));
+}
+
 void colourful_square() {
     Vec3 colour(0.0f, 0.0f, 0.0f);
     float increment = 255.f / 512.f;
@@ -101,10 +105,19 @@ Vec3 sample_ground(
     const int x = fabs(position.x * inverse_square_scale);
     const int y = fabs(position.z * inverse_square_scale);
 
+    const Vec3 world_up {0.0f, 1.0f, 0.0f};
+    const float dot_up {dot(direction, world_up)};
+
     if ((x%2) ^ (y%2)) {
-        return Vec3 {128.0f, 64.0f, 32.0f};
+        return lerp(
+            Vec3 {128.0f, 64.0f, 32.0f},
+            Vec3 {255.0f, 128.0f, 64.0f},
+            dot_up);
     } else {
-        return Vec3 {32.0f, 64.0f, 128.0f};
+        return lerp(
+            Vec3 {32.0f, 64.0f, 128.0f},
+            Vec3 {64.0f, 128.0f, 255.0f},
+            dot_up);
     }
 }
 
@@ -115,6 +128,7 @@ Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
     const Vec3 ground_inverse_normal(0.0f, -1.0f, 0.0f);
     const Vec3 to_ground {ground_point - position};
     if (dot(to_ground, direction) > 0.0f) {
+        // hit the ground, figure out where
         const float distance_to_ground {dot(to_ground, ground_inverse_normal)};
         const float dot_to_ground {dot(direction, ground_inverse_normal)};
         const float distance {distance_to_ground / dot_to_ground};
