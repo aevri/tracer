@@ -45,10 +45,6 @@ float dot(Vec3::InParam left, Vec3::InParam right) {
     return left.x*right.x + left.y*right.y + left.z*right.z;
 }
 
-// Vec3&& normalize(Vec3&& in) {
-//     return Vec3
-// }
-
 float length(const float x, const float y) {
     return sqrt(x*x + y*y);
 }
