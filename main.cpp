@@ -109,15 +109,13 @@ Vec3 sample_ground(
     const float dot_up {dot(direction, world_up)};
 
     if ((x%2) ^ (y%2)) {
-        return lerp(
-            Vec3 {128.0f, 64.0f, 32.0f},
-            Vec3 {255.0f, 128.0f, 64.0f},
-            dot_up);
+        const Vec3 green {32.0f, 128.0f, 32.0f};
+        const Vec3 light_green {green * 2.0f};
+        return lerp(green, light_green, dot_up);
     } else {
-        return lerp(
-            Vec3 {32.0f, 64.0f, 128.0f},
-            Vec3 {64.0f, 128.0f, 255.0f},
-            dot_up);
+        const Vec3 green {64.0f, 128.0f, 64.0f};
+        const Vec3 light_green {green * 2.0f};
+        return lerp(green, light_green, dot_up);
     }
 }
 
