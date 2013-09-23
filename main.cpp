@@ -121,6 +121,29 @@ Vec3 sample_ground(
 
 Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
 
+    // check for collision against sphere
+    const Vec3 sphere_point(0.0f, 7.5f, 50.0f);
+    const float sphere_magnitude = 5.0f;
+    const Vec3 to_sphere {sphere_point - position};
+    const float closest_to_sphere {dot(direction, to_sphere)};
+    const Vec3 point_nearest_sphere {position + direction * closest_to_sphere};
+    const float length_to_sphere {length(sphere_point - point_nearest_sphere)};
+    // TODO: use squared magnitude
+    if (length_to_sphere < sphere_magnitude) {
+        // calc intersection point
+        const float adjacent_length = sqrt(
+            sphere_magnitude * sphere_magnitude
+            + length_to_sphere * length_to_sphere);
+        const Vec3 intersection {
+            point_nearest_sphere - (direction * adjacent_length)};
+
+        // sample the sphere
+        const Vec3 normal {normalised(intersection - sphere_point)};
+        const Vec3 half {0.5f, 0.5f, 0.5f};
+        const Vec3 color {(normal * 0.5f + half) * 255.0f};
+        return color;
+    }
+
     // check for collision against ground
     const Vec3 ground_point(0.0f, 0.0f, 0.0f);
     const Vec3 ground_inverse_normal(0.0f, -1.0f, 0.0f);
