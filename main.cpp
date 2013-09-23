@@ -49,16 +49,16 @@ float dot(Vec3::InParam left, Vec3::InParam right) {
 //     return Vec3
 // }
 
-float distance2d(const float x, const float y) {
+float length(const float x, const float y) {
     return sqrt(x*x + y*y);
 }
 
-float distance3d(const float x, const float y, const float z) {
+float length(const float x, const float y, const float z) {
     return sqrt(x*x + y*y + z*z);
 }
 
 float length(Vec3::InParam in) {
-    return distance3d(in.x, in.y, in.z);
+    return length(in.x, in.y, in.z);
 }
 
 Vec3 normalised(Vec3::InParam in) {
@@ -79,7 +79,7 @@ void colourful_square() {
         colour.y = 0;
         for (int y=0; y<512; ++y) {
             colour.y += increment;
-            colour.z = 64.0f + distance2d(x, y) / 8.0f;
+            colour.z = 64.0f + length(x, y) / 8.0f;
             printf("%c%c%c", int(colour.x), int(colour.y), int(colour.z));
         }
     }
