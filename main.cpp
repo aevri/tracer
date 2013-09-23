@@ -66,6 +66,11 @@ Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) {
     return (from * (1.0f - t) + (to * t));
 }
 
+Vec3 reflected(Vec3::InParam direction, Vec3::InParam normal) {
+    const float scale = -2.0f * dot(direction, normal);
+    return direction + normal * scale;
+}
+
 Vec3 sample_sky(const Vec3::InParam position, const Vec3::InParam direction) {
     const Vec3 forward{0.0f, 0.0f, 1.0f};
     const Vec3 right{1.0f, 0.0f, 0.0f};
@@ -115,11 +120,14 @@ Vec3 sample_sphere(
 }
 
 
-Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
+Vec3 sample(Vec3 position, Vec3 direction) {
+
+    Vec3 colour {0.0f, 0.0f, 0.0f};
+    float colour_blend = 1.0f;
 
     // check for collision against sphere
-    const Vec3 sphere_point(0.0f, 7.5f, 50.0f);
-    const float sphere_magnitude = 5.0f;
+    const Vec3 sphere_point(0.0f, 15.0f, 50.0f);
+    const float sphere_magnitude = 12.5f;
     const Vec3 to_sphere {sphere_point - position};
     const float closest_to_sphere {dot(direction, to_sphere)};
     const Vec3 point_nearest_sphere {position + direction * closest_to_sphere};
@@ -129,13 +137,19 @@ Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
         // calc intersection point
         const float adjacent_length = sqrt(
             sphere_magnitude * sphere_magnitude
-            + length_to_sphere * length_to_sphere);
+            - length_to_sphere * length_to_sphere);
         const Vec3 intersection {
             point_nearest_sphere - (direction * adjacent_length)};
 
         // sample the sphere
         const Vec3 normal {normalised(intersection - sphere_point)};
-        return sample_sphere(intersection, normal, direction);
+        // position = intersection;
+        direction = reflected(direction, normal);
+        colour = lerp(
+            colour,
+            sample_sphere(intersection, normal, direction),
+            colour_blend);
+        colour_blend = 0.5f;
     }
 
     // check for collision against ground
@@ -148,10 +162,18 @@ Vec3 sample(const Vec3::InParam position, const Vec3::InParam direction) {
         const float dot_to_ground {dot(direction, ground_inverse_normal)};
         const float distance {distance_to_ground / dot_to_ground};
         const Vec3 ground_intersection {position + direction * distance};
-        return sample_ground(ground_intersection, direction);
+        colour = lerp(
+            colour,
+            sample_ground(ground_intersection, direction),
+            colour_blend);
+    } else {
+        colour = lerp(
+            colour,
+            sample_sky(position, direction),
+            colour_blend);
     }
 
-    return sample_sky(position, direction);
+    return colour;
 }
 
 void draw_scene(const int image_width, const int image_height) {
