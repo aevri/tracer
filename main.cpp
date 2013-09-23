@@ -70,21 +70,6 @@ Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) {
     return (from * (1.0f - t) + (to * t));
 }
 
-void colourful_square() {
-    Vec3 colour(0.0f, 0.0f, 0.0f);
-    float increment = 255.f / 512.f;
-
-    for (int x=0; x<512; ++x) {
-        colour.x += increment;
-        colour.y = 0;
-        for (int y=0; y<512; ++y) {
-            colour.y += increment;
-            colour.z = 64.0f + length(x, y) / 8.0f;
-            printf("%c%c%c", int(colour.x), int(colour.y), int(colour.z));
-        }
-    }
-}
-
 Vec3 sample_sky(const Vec3::InParam position, const Vec3::InParam direction) {
     const Vec3 forward{0.0f, 0.0f, 1.0f};
     const Vec3 right{1.0f, 0.0f, 0.0f};
