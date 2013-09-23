@@ -126,7 +126,7 @@ Vec3 sample(Vec3 position, Vec3 direction) {
     float colour_blend = 1.0f;
 
     // check for collision against sphere
-    const Vec3 sphere_point(0.0f, 15.0f, 50.0f);
+    const Vec3 sphere_point(0.0f, 20.0f, 50.0f);
     const float sphere_magnitude = 12.5f;
     const Vec3 to_sphere {sphere_point - position};
     const float closest_to_sphere {dot(direction, to_sphere)};
