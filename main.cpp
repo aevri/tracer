@@ -143,7 +143,7 @@ Vec3 sample(Vec3 position, Vec3 direction) {
 
         // sample the sphere
         const Vec3 normal {normalised(intersection - sphere_point)};
-        // position = intersection;
+        position = intersection;
         direction = reflected(direction, normal);
         colour = lerp(
             colour,
@@ -153,11 +153,11 @@ Vec3 sample(Vec3 position, Vec3 direction) {
     }
 
     // check for collision against ground
-    const Vec3 ground_point(0.0f, 0.0f, 0.0f);
     const Vec3 ground_inverse_normal(0.0f, -1.0f, 0.0f);
-    const Vec3 to_ground {ground_point - position};
-    if (dot(to_ground, direction) > 0.0f) {
+    if (dot(ground_inverse_normal, direction) > 0.0f) {
         // hit the ground, figure out where
+        const Vec3 ground_point(0.0f, 0.0f, 0.0f);
+        const Vec3 to_ground {ground_point - position};
         const float distance_to_ground {dot(to_ground, ground_inverse_normal)};
         const float dot_to_ground {dot(direction, ground_inverse_normal)};
         const float distance {distance_to_ground / dot_to_ground};
