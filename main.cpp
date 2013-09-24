@@ -19,6 +19,13 @@ struct Vec3
     float x, y, z;
 };
 
+Vec3& operator+=(Vec3& left, Vec3::InParam right) {
+    left.x += right.x;
+    left.y += right.y;
+    left.z += right.z;
+    return left;
+}
+
 Vec3 operator+(Vec3::InParam left, Vec3::InParam right) {
     return Vec3{
         left.x + right.x,
@@ -224,7 +231,7 @@ void draw_scene(const int image_width, const int image_height) {
     const float sample_scale = 1.0f / float(num_samples);
 
     std::default_random_engine generator;
-    std::uniform_real_distribution<float> distribution(-1.0, 1.0);
+    std::normal_distribution<float> distribution(0.0f, 2.0f);
 
     for (int y=image_height-1; y>=0; --y) {
         for (int x=0; x<image_width; ++x) {
@@ -232,7 +239,7 @@ void draw_scene(const int image_width, const int image_height) {
                 float(x-half_image_width),
                 float(y-half_image_height),
                 0.0f};
-            Vec3 colour;
+            Vec3 colour {0.0f, 0.0f, 0.0f};
             for (int sample_i=0; sample_i < num_samples; ++sample_i)
             {
                 const Vec3 sample_offset = Vec3 {
@@ -245,15 +252,9 @@ void draw_scene(const int image_width, const int image_height) {
                     + pixel_offset
                     + sample_offset);
 
-                if (0 == sample_i) {
-                    colour = sample(camera_pos, pixel_direction);
-                } else {
-                    colour = lerp(
-                        colour,
-                        sample(camera_pos, pixel_direction),
-                        sample_scale);
-                }
+                colour += sample(camera_pos, pixel_direction);
             }
+            colour *= sample_scale;
             printf("%c%c%c", int(colour.x), int(colour.y), int(colour.z));
         }
     }
