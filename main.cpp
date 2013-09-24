@@ -17,6 +17,13 @@ struct Vec3
     float x, y, z;
 };
 
+Vec3& operator+=(Vec3& left, Vec3::InParam right) {
+    left.x += right.x;
+    left.y += right.y;
+    left.z += right.z;
+    return left;
+}
+
 Vec3 operator+(Vec3::InParam left, Vec3::InParam right) {
     return Vec3{
         left.x + right.x,
