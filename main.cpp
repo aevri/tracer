@@ -71,9 +71,7 @@ Vec3 reflected(Vec3::InParam direction, Vec3::InParam normal) {
     return direction + normal * scale;
 }
 
-Vec3 sample_sky(const Vec3::InParam position, const Vec3::InParam direction) {
-    const Vec3 forward{0.0f, 0.0f, 1.0f};
-    const Vec3 right{1.0f, 0.0f, 0.0f};
+Vec3 sample_sky(const Vec3::InParam direction) {
     const Vec3 up{0.0f, 1.0f, 0.0f};
 
     const float red = 32.0f;
@@ -169,7 +167,8 @@ Vec3 sample(Vec3 position, Vec3 direction) {
     } else {
         colour = lerp(
             colour,
-            sample_sky(position, direction),
+            // TODO: remove position parameter
+            sample_sky(direction),
             colour_blend);
     }
 
