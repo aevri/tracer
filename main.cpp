@@ -1,3 +1,5 @@
+#include <random>
+
 #include <math.h>
 #include <stdio.h>
 
@@ -158,8 +160,10 @@ Vec3 sample(Vec3 position, Vec3 direction) {
     const float closest_to_sphere {dot(direction, to_sphere)};
     const Vec3 point_nearest_sphere {position + direction * closest_to_sphere};
     const float length_to_sphere {length(sphere_point - point_nearest_sphere)};
+
     // TODO: use squared magnitude
     if (length_to_sphere < sphere_magnitude) {
+
         // calc intersection point
         const float adjacent_length = sqrt(
             sphere_magnitude * sphere_magnitude
@@ -216,18 +220,40 @@ void draw_scene(const int image_width, const int image_height) {
     const int half_image_width = image_width / 2;
     const int half_image_height = image_height / 2;
 
+    const int num_samples = 64;
+    const float sample_scale = 1.0f / float(num_samples);
+
+    std::default_random_engine generator;
+    std::uniform_real_distribution<float> distribution(-1.0, 1.0);
+
     for (int y=image_height-1; y>=0; --y) {
         for (int x=0; x<image_width; ++x) {
             const Vec3 pixel_offset = Vec3 {
                 float(x-half_image_width),
                 float(y-half_image_height),
                 0.0f};
+            Vec3 colour;
+            for (int sample_i=0; sample_i < num_samples; ++sample_i)
+            {
+                const Vec3 sample_offset = Vec3 {
+                    distribution(generator),
+                    distribution(generator),
+                    0.0f};
 
-            const Vec3 pixel_direction = normalised(
-                camera_forward*image_height + pixel_offset);
+                const Vec3 pixel_direction = normalised(
+                    camera_forward * image_height
+                    + pixel_offset
+                    + sample_offset);
 
-            const Vec3 colour = sample(camera_pos, pixel_direction);
-
+                if (0 == sample_i) {
+                    colour = sample(camera_pos, pixel_direction);
+                } else {
+                    colour = lerp(
+                        colour,
+                        sample(camera_pos, pixel_direction),
+                        sample_scale);
+                }
+            }
             printf("%c%c%c", int(colour.x), int(colour.y), int(colour.z));
         }
     }
