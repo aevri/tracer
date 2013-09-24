@@ -41,8 +41,23 @@ Vec3 operator*(Vec3::InParam v, const float scale) {
     };
 }
 
+Vec3& operator*=(Vec3& v, const float scale) {
+    v.x *= scale;
+    v.y *= scale;
+    v.z *= scale;
+    return v;
+}
+
 float dot(Vec3::InParam left, Vec3::InParam right) {
     return left.x*right.x + left.y*right.y + left.z*right.z;
+}
+
+float length_squared(const float x, const float y, const float z) {
+    return x*x + y*y + z*z;
+}
+
+float length_squared(Vec3::InParam in) {
+    return length_squared(in.x, in.y, in.z);
 }
 
 float length(const float x, const float y) {
@@ -83,24 +98,35 @@ Vec3 sample_sky(const Vec3::InParam direction) {
 
 Vec3 sample_ground(
         const Vec3::InParam position,
-        const Vec3::InParam direction)
+        const Vec3::InParam direction,
+        const Vec3::InParam sphere_point_on_ground,
+        const float sphere_magnitude_squared)
 {
     const float inverse_square_scale = 0.1f;
     const int x = fabs(position.x * inverse_square_scale);
     const int y = fabs(position.z * inverse_square_scale);
 
-    const Vec3 world_up {0.0f, 1.0f, 0.0f};
-    const float dot_up {dot(direction, world_up)};
+    const Vec3 world_down {0.0f, -1.0f, 0.0f};
+    const float dot_down {dot(direction, world_down)};
+
+    Vec3 colour;
 
     if ((x%2) ^ (y%2)) {
         const Vec3 green {32.0f, 128.0f, 32.0f};
         const Vec3 light_green {green * 2.0f};
-        return lerp(green, light_green, dot_up);
+        colour = lerp(green, light_green, dot_down);
     } else {
         const Vec3 green {64.0f, 128.0f, 64.0f};
         const Vec3 light_green {green * 2.0f};
-        return lerp(green, light_green, dot_up);
+        colour = lerp(green, light_green, dot_down);
     }
+
+    const Vec3 to_sphere_on_ground = sphere_point_on_ground - position;
+    if (length_squared(to_sphere_on_ground) < sphere_magnitude_squared) {
+        colour *= 0.5f;
+    }
+
+    return colour;
 }
 
 Vec3 sample_sphere(
@@ -124,8 +150,10 @@ Vec3 sample(Vec3 position, Vec3 direction) {
     float colour_blend = 1.0f;
 
     // check for collision against sphere
-    const Vec3 sphere_point(0.0f, 20.0f, 50.0f);
-    const float sphere_magnitude = 12.5f;
+    const Vec3 sphere_point {0.0f, 15.0f, 40.0f};
+    const Vec3 sphere_point_on_ground {0.0f, 0.0f, 40.0f};
+    const float sphere_magnitude = 11.0f;
+    const float sphere_magnitude_squared = sphere_magnitude * sphere_magnitude;
     const Vec3 to_sphere {sphere_point - position};
     const float closest_to_sphere {dot(direction, to_sphere)};
     const Vec3 point_nearest_sphere {position + direction * closest_to_sphere};
@@ -162,7 +190,11 @@ Vec3 sample(Vec3 position, Vec3 direction) {
         const Vec3 ground_intersection {position + direction * distance};
         colour = lerp(
             colour,
-            sample_ground(ground_intersection, direction),
+            sample_ground(
+                ground_intersection,
+                direction,
+                sphere_point_on_ground,
+                sphere_magnitude_squared),
             colour_blend);
     } else {
         colour = lerp(
