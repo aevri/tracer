@@ -85,7 +85,7 @@ Vec3 normalised(Vec3::InParam in) {
 }
 
 Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) {
-    return (from * (1.0f - t) + (to * t));
+    return (from * (1.0f - t)) + (to * t);
 }
 
 Vec3 reflected(Vec3::InParam direction, Vec3::InParam normal) {
