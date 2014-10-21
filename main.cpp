@@ -41,7 +41,7 @@ Vec3 operator-(Vec3::InParam left, Vec3::InParam right) {
 }
 
 Vec3 operator*(Vec3::InParam v, const float scale) {
-    return Vec3 {
+    return Vec3{
         v.x * scale,
         v.y * scale,
         v.z * scale
@@ -108,7 +108,7 @@ Vec3 sample_sky(const Vec3::InParam direction) {
     const float green = 128.0f;
     const float blue = 180.0f + 64.0f * dot(direction, up);
 
-    return Vec3 {red, green, blue};
+    return Vec3{red, green, blue};
 }
 
 Vec3 sample_ground(
@@ -233,7 +233,7 @@ void draw_scene(const int image_width, const int image_height) {
 
     for (int y=image_height-1; y>=0; --y) {
         for (int x=0; x<image_width; ++x) {
-            const Vec3 pixel_offset = Vec3 {
+            const Vec3 pixel_offset = Vec3{
                 float(x-half_image_width),
                 float(y-half_image_height),
                 0.0f};
