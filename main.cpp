@@ -88,9 +88,16 @@ Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) {
     return (from * (1.0f - t)) + (to * t);
 }
 
-Vec3 reflected(Vec3::InParam direction, Vec3::InParam normal) {
-    const float scale = -2.0f * dot(direction, normal);
-    return direction + normal * scale;
+Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) {
+    // To reflect the supplied vector along the axis of the normal, add as much
+    // of the normal to the vector as would make it perpendicular to the
+    // normal, then add the same amount again.
+    //
+    // This will reverse the vector's magnitude with respect to the normal,
+    // whilst keeping the magnitude of the vector the same.
+    //
+    const float scale = -2.0f * dot(vector, normal);
+    return vector + normal * scale;
 }
 
 Vec3 sample_sky(const Vec3::InParam direction) {
