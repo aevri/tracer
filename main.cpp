@@ -96,8 +96,9 @@ Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) {
     // This will reverse the vector's magnitude with respect to the normal,
     // whilst keeping the magnitude of the vector the same.
     //
-    const float scale = -2.0f * dot(vector, normal);
-    return vector + normal * scale;
+    const float magnitude_of_normal_shared_with_vector = dot(vector, normal);
+    const float normal_scale = -2.0f * magnitude_of_normal_shared_with_vector;
+    return vector + normal * normal_scale;
 }
 
 Vec3 sample_sky(const Vec3::InParam direction) {
