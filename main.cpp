@@ -5,9 +5,9 @@ struct Vec3
 {
     typedef const Vec3& InParam;
 
-    Vec3() {}
+    Vec3() noexcept {}
 
-    Vec3(const float x, const float y, const float z)
+    Vec3(const float x, const float y, const float z) noexcept
         : x(x)
         , y(y)
         , z(z)
@@ -17,14 +17,14 @@ struct Vec3
     float x, y, z;
 };
 
-Vec3& operator+=(Vec3& left, Vec3::InParam right) {
+Vec3& operator+=(Vec3& left, Vec3::InParam right) noexcept {
     left.x += right.x;
     left.y += right.y;
     left.z += right.z;
     return left;
 }
 
-Vec3 operator+(Vec3::InParam left, Vec3::InParam right) {
+Vec3 operator+(Vec3::InParam left, Vec3::InParam right) noexcept {
     return Vec3{
         left.x + right.x,
         left.y + right.y,
@@ -32,7 +32,7 @@ Vec3 operator+(Vec3::InParam left, Vec3::InParam right) {
     };
 }
 
-Vec3 operator-(Vec3::InParam left, Vec3::InParam right) {
+Vec3 operator-(Vec3::InParam left, Vec3::InParam right) noexcept {
     return Vec3{
         left.x - right.x,
         left.y - right.y,
@@ -40,7 +40,7 @@ Vec3 operator-(Vec3::InParam left, Vec3::InParam right) {
     };
 }
 
-Vec3 operator*(Vec3::InParam v, const float scale) {
+Vec3 operator*(Vec3::InParam v, const float scale) noexcept {
     return Vec3{
         v.x * scale,
         v.y * scale,
@@ -48,47 +48,51 @@ Vec3 operator*(Vec3::InParam v, const float scale) {
     };
 }
 
-Vec3& operator*=(Vec3& v, const float scale) {
+Vec3& operator*=(Vec3& v, const float scale) noexcept {
     v.x *= scale;
     v.y *= scale;
     v.z *= scale;
     return v;
 }
 
-float dot(Vec3::InParam left, Vec3::InParam right) {
+float dot(Vec3::InParam left, Vec3::InParam right) noexcept {
     return left.x*right.x + left.y*right.y + left.z*right.z;
 }
 
-float length_squared(const float x, const float y, const float z) {
+float length_squared(const float x, const float y, const float z) noexcept {
     return x*x + y*y + z*z;
 }
 
-float length_squared(Vec3::InParam in) {
+float length_squared(Vec3::InParam in) noexcept {
     return length_squared(in.x, in.y, in.z);
 }
 
-float length(const float x, const float y) {
+float length(const float x, const float y) noexcept {
+    // sqrt may raise std::domain_error if the input is negative but that's not
+    // possible here as we're summing two squares
     return sqrt(x*x + y*y);
 }
 
-float length(const float x, const float y, const float z) {
+float length(const float x, const float y, const float z) noexcept {
+    // sqrt may raise std::domain_error if the input is negative but that's not
+    // possible here as we're summing three squares
     return sqrt(x*x + y*y + z*z);
 }
 
-float length(Vec3::InParam in) {
+float length(Vec3::InParam in) noexcept {
     return length(in.x, in.y, in.z);
 }
 
-Vec3 normalised(Vec3::InParam in) {
+Vec3 normalised(Vec3::InParam in) noexcept {
     const float scale = 1.0f / length(in);
     return in * scale;
 }
 
-Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) {
+Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) noexcept {
     return (from * (1.0f - t)) + (to * t);
 }
 
-Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) {
+Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) noexcept {
     // To reflect the supplied vector along the axis of the normal, add as much
     // of the normal to the vector as would make it perpendicular to the
     // normal, then add the same amount again.
@@ -101,7 +105,7 @@ Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) {
     return vector + normal * normal_scale;
 }
 
-Vec3 sample_sky(const Vec3::InParam direction) {
+Vec3 sample_sky(const Vec3::InParam direction) noexcept {
     const Vec3 up{0.0f, 1.0f, 0.0f};
 
     const float red = 32.0f;
@@ -115,7 +119,7 @@ Vec3 sample_ground(
         const Vec3::InParam position,
         const Vec3::InParam direction,
         const Vec3::InParam sphere_point_on_ground,
-        const float sphere_magnitude_squared)
+        const float sphere_magnitude_squared) noexcept
 {
     const float inverse_square_scale = 0.1f;
     const int x = fabs(position.x * inverse_square_scale);
@@ -147,7 +151,7 @@ Vec3 sample_ground(
 Vec3 sample_sphere(
         const Vec3::InParam position,
         const Vec3::InParam normal,
-        const Vec3::InParam direction)
+        const Vec3::InParam direction) noexcept
 {
     const Vec3 world_up {0.0f, 1.0f, 0.0f};
     const float dot_up {dot(normal, world_up)};
@@ -159,7 +163,7 @@ Vec3 sample_sphere(
 }
 
 
-Vec3 sample(Vec3 position, Vec3 direction) {
+Vec3 sample(Vec3 position, Vec3 direction) noexcept {
 
     Vec3 colour {0.0f, 0.0f, 0.0f};
     float colour_blend = 1.0f;
@@ -222,7 +226,7 @@ Vec3 sample(Vec3 position, Vec3 direction) {
     return colour;
 }
 
-void draw_scene(const int image_width, const int image_height) {
+void draw_scene(const int image_width, const int image_height) noexcept {
     const Vec3 camera_forward{0.0f, 0.0f, 1.0f};
     const Vec3 camera_right{1.0f, 0.0f, 0.0f};
     const Vec3 camera_up{0.0f, 1.0f, 0.0f};
