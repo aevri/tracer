@@ -257,7 +257,7 @@ int main() {
     draw_scene(512, 512);
 }
 
-// Copyright 2014 Angelos Evripiotis
+// Copyright 2014-2019 Angelos Evripiotis
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
