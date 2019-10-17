@@ -6,7 +6,7 @@ struct Vec3 {
 
   Vec3() noexcept {}
 
-  Vec3(const float x, const float y, const float z) noexcept
+  constexpr Vec3(const float x, const float y, const float z) noexcept
       : x(x), y(y), z(z) {}
 
   float x, y, z;
@@ -19,15 +19,15 @@ Vec3 &operator+=(Vec3 &left, Vec3::InParam right) noexcept {
   return left;
 }
 
-Vec3 operator+(Vec3::InParam left, Vec3::InParam right) noexcept {
+constexpr Vec3 operator+(Vec3::InParam left, Vec3::InParam right) noexcept {
   return Vec3{left.x + right.x, left.y + right.y, left.z + right.z};
 }
 
-Vec3 operator-(Vec3::InParam left, Vec3::InParam right) noexcept {
+constexpr Vec3 operator-(Vec3::InParam left, Vec3::InParam right) noexcept {
   return Vec3{left.x - right.x, left.y - right.y, left.z - right.z};
 }
 
-Vec3 operator*(Vec3::InParam v, const float scale) noexcept {
+constexpr Vec3 operator*(Vec3::InParam v, const float scale) noexcept {
   return Vec3{v.x * scale, v.y * scale, v.z * scale};
 }
 
@@ -38,15 +38,16 @@ Vec3 &operator*=(Vec3 &v, const float scale) noexcept {
   return v;
 }
 
-float dot(Vec3::InParam left, Vec3::InParam right) noexcept {
+constexpr float dot(Vec3::InParam left, Vec3::InParam right) noexcept {
   return left.x * right.x + left.y * right.y + left.z * right.z;
 }
 
-float length_squared(const float x, const float y, const float z) noexcept {
+constexpr float length_squared(const float x, const float y,
+                               const float z) noexcept {
   return x * x + y * y + z * z;
 }
 
-float length_squared(Vec3::InParam in) noexcept {
+constexpr float length_squared(Vec3::InParam in) noexcept {
   return length_squared(in.x, in.y, in.z);
 }
 
@@ -69,11 +70,12 @@ Vec3 normalised(Vec3::InParam in) noexcept {
   return in * scale;
 }
 
-Vec3 lerp(Vec3::InParam from, Vec3::InParam to, const float t) noexcept {
+constexpr Vec3 lerp(Vec3::InParam from, Vec3::InParam to,
+                    const float t) noexcept {
   return (from * (1.0f - t)) + (to * t);
 }
 
-Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) noexcept {
+constexpr Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) noexcept {
   // To reflect the supplied vector along the axis of the normal, add as much
   // of the normal to the vector as would make it perpendicular to the
   // normal, then add the same amount again.
@@ -86,11 +88,11 @@ Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) noexcept {
   return vector + normal * normal_scale;
 }
 
-Vec3 sample_sky(Vec3::InParam direction) noexcept {
-  const Vec3 up{0.0f, 1.0f, 0.0f};
+constexpr Vec3 sample_sky(Vec3::InParam direction) noexcept {
+  constexpr Vec3 up{0.0f, 1.0f, 0.0f};
 
-  const float red = 32.0f;
-  const float green = 128.0f;
+  constexpr float red = 32.0f;
+  constexpr float green = 128.0f;
   const float blue = 180.0f + 64.0f * dot(direction, up);
 
   return Vec3{red, green, blue};
@@ -99,22 +101,22 @@ Vec3 sample_sky(Vec3::InParam direction) noexcept {
 Vec3 sample_ground(Vec3::InParam position, Vec3::InParam direction,
                    Vec3::InParam sphere_point_on_ground,
                    const float sphere_magnitude_squared) noexcept {
-  const float inverse_square_scale = 0.1f;
+  constexpr float inverse_square_scale = 0.1f;
   const int x = fabs(position.x * inverse_square_scale);
   const int y = fabs(position.z * inverse_square_scale);
 
-  const Vec3 world_down{0.0f, -1.0f, 0.0f};
+  constexpr Vec3 world_down{0.0f, -1.0f, 0.0f};
   const float dot_down{dot(direction, world_down)};
 
   Vec3 colour;
 
   if ((x % 2) ^ (y % 2)) {
-    const Vec3 green{32.0f, 128.0f, 32.0f};
-    const Vec3 light_green{green * 2.0f};
+    constexpr Vec3 green{32.0f, 128.0f, 32.0f};
+    constexpr Vec3 light_green{green * 2.0f};
     colour = lerp(green, light_green, dot_down);
   } else {
-    const Vec3 green{64.0f, 128.0f, 64.0f};
-    const Vec3 light_green{green * 2.0f};
+    constexpr Vec3 green{64.0f, 128.0f, 64.0f};
+    constexpr Vec3 light_green{green * 2.0f};
     colour = lerp(green, light_green, dot_down);
   }
 
@@ -128,10 +130,10 @@ Vec3 sample_ground(Vec3::InParam position, Vec3::InParam direction,
 
 Vec3 sample_sphere(Vec3::InParam position, Vec3::InParam normal,
                    Vec3::InParam direction) noexcept {
-  const Vec3 world_up{0.0f, 1.0f, 0.0f};
+  constexpr Vec3 world_up{0.0f, 1.0f, 0.0f};
   const float dot_up{dot(normal, world_up)};
 
-  const Vec3 half{0.5f, 0.5f, 0.5f};
+  constexpr Vec3 half{0.5f, 0.5f, 0.5f};
   const Vec3 color{(normal * 0.5f + half) * 255.0f};
   const Vec3 half_color{color * 0.5f};
   return lerp(half_color, color, dot_up);
@@ -143,10 +145,11 @@ Vec3 sample(Vec3 position, Vec3 direction) noexcept {
   float colour_blend = 1.0f;
 
   // check for collision against sphere
-  const Vec3 sphere_point{0.0f, 15.0f, 40.0f};
-  const Vec3 sphere_point_on_ground{0.0f, 0.0f, 40.0f};
-  const float sphere_magnitude = 11.0f;
-  const float sphere_magnitude_squared = sphere_magnitude * sphere_magnitude;
+  constexpr Vec3 sphere_point{0.0f, 15.0f, 40.0f};
+  constexpr Vec3 sphere_point_on_ground{0.0f, 0.0f, 40.0f};
+  constexpr float sphere_magnitude = 11.0f;
+  constexpr float sphere_magnitude_squared =
+      sphere_magnitude * sphere_magnitude;
   const Vec3 to_sphere{sphere_point - position};
   const float closest_to_sphere{dot(direction, to_sphere)};
   const Vec3 point_nearest_sphere{position + direction * closest_to_sphere};
@@ -169,10 +172,10 @@ Vec3 sample(Vec3 position, Vec3 direction) noexcept {
   }
 
   // check for collision against ground
-  const Vec3 ground_inverse_normal(0.0f, -1.0f, 0.0f);
+  constexpr Vec3 ground_inverse_normal(0.0f, -1.0f, 0.0f);
   if (dot(ground_inverse_normal, direction) > 0.0f) {
     // hit the ground, figure out where
-    const Vec3 ground_point(0.0f, 0.0f, 0.0f);
+    constexpr Vec3 ground_point(0.0f, 0.0f, 0.0f);
     const Vec3 to_ground{ground_point - position};
     const float distance_to_ground{dot(to_ground, ground_inverse_normal)};
     const float dot_to_ground{dot(direction, ground_inverse_normal)};
@@ -193,10 +196,10 @@ Vec3 sample(Vec3 position, Vec3 direction) noexcept {
 }
 
 void draw_scene(const int image_width, const int image_height) noexcept {
-  const Vec3 camera_forward{0.0f, 0.0f, 1.0f};
-  const Vec3 camera_right{1.0f, 0.0f, 0.0f};
-  const Vec3 camera_up{0.0f, 1.0f, 0.0f};
-  const Vec3 camera_pos{0.0f, 10.0f, 0.0f};
+  constexpr Vec3 camera_forward{0.0f, 0.0f, 1.0f};
+  constexpr Vec3 camera_right{1.0f, 0.0f, 0.0f};
+  constexpr Vec3 camera_up{0.0f, 1.0f, 0.0f};
+  constexpr Vec3 camera_pos{0.0f, 10.0f, 0.0f};
 
   const int half_image_width = image_width / 2;
   const int half_image_height = image_height / 2;
