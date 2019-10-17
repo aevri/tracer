@@ -105,7 +105,7 @@ Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) noexcept {
     return vector + normal * normal_scale;
 }
 
-Vec3 sample_sky(const Vec3::InParam direction) noexcept {
+Vec3 sample_sky(Vec3::InParam direction) noexcept {
     const Vec3 up{0.0f, 1.0f, 0.0f};
 
     const float red = 32.0f;
@@ -116,9 +116,9 @@ Vec3 sample_sky(const Vec3::InParam direction) noexcept {
 }
 
 Vec3 sample_ground(
-        const Vec3::InParam position,
-        const Vec3::InParam direction,
-        const Vec3::InParam sphere_point_on_ground,
+        Vec3::InParam position,
+        Vec3::InParam direction,
+        Vec3::InParam sphere_point_on_ground,
         const float sphere_magnitude_squared) noexcept
 {
     const float inverse_square_scale = 0.1f;
@@ -149,9 +149,9 @@ Vec3 sample_ground(
 }
 
 Vec3 sample_sphere(
-        const Vec3::InParam position,
-        const Vec3::InParam normal,
-        const Vec3::InParam direction) noexcept
+        Vec3::InParam position,
+        Vec3::InParam normal,
+        Vec3::InParam direction) noexcept
 {
     const Vec3 world_up {0.0f, 1.0f, 0.0f};
     const float dot_up {dot(normal, world_up)};
