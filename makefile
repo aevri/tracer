@@ -1,5 +1,5 @@
-tracer: main.cpp
-	g++ main.cpp -o tracer -Wall --std=c++14
+tracer: main.cpp vec3.cpp linear_algebra.cpp
+	g++ main.cpp vec3.cpp linear_algebra.cpp -o tracer -Wall --std=c++14
 
 test: tracer
 	./tracer > out.ppm

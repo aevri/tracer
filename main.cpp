@@ -1,79 +1,8 @@
-#include <math.h>
+#include "vec3.h"
+
 #include <stdio.h>
 
-struct Vec3 {
-  typedef const Vec3 &InParam;
-
-  Vec3() noexcept {}
-
-  constexpr Vec3(const float x, const float y, const float z) noexcept
-      : x(x), y(y), z(z) {}
-
-  float x, y, z;
-};
-
-Vec3 &operator+=(Vec3 &left, Vec3::InParam right) noexcept {
-  left.x += right.x;
-  left.y += right.y;
-  left.z += right.z;
-  return left;
-}
-
-constexpr Vec3 operator+(Vec3::InParam left, Vec3::InParam right) noexcept {
-  return Vec3{left.x + right.x, left.y + right.y, left.z + right.z};
-}
-
-constexpr Vec3 operator-(Vec3::InParam left, Vec3::InParam right) noexcept {
-  return Vec3{left.x - right.x, left.y - right.y, left.z - right.z};
-}
-
-constexpr Vec3 operator*(Vec3::InParam v, const float scale) noexcept {
-  return Vec3{v.x * scale, v.y * scale, v.z * scale};
-}
-
-Vec3 &operator*=(Vec3 &v, const float scale) noexcept {
-  v.x *= scale;
-  v.y *= scale;
-  v.z *= scale;
-  return v;
-}
-
-constexpr float dot(Vec3::InParam left, Vec3::InParam right) noexcept {
-  return left.x * right.x + left.y * right.y + left.z * right.z;
-}
-
-constexpr float length_squared(const float x, const float y,
-                               const float z) noexcept {
-  return x * x + y * y + z * z;
-}
-
-constexpr float length_squared(Vec3::InParam in) noexcept {
-  return length_squared(in.x, in.y, in.z);
-}
-
-float length(const float x, const float y) noexcept {
-  // sqrt may raise std::domain_error if the input is negative but that's not
-  // possible here as we're summing two squares
-  return sqrt(x * x + y * y);
-}
-
-float length(const float x, const float y, const float z) noexcept {
-  // sqrt may raise std::domain_error if the input is negative but that's not
-  // possible here as we're summing three squares
-  return sqrt(x * x + y * y + z * z);
-}
-
-float length(Vec3::InParam in) noexcept { return length(in.x, in.y, in.z); }
-
-Vec3 normalised(Vec3::InParam in) noexcept {
-  const float scale = 1.0f / length(in);
-  return in * scale;
-}
-
-constexpr Vec3 lerp(Vec3::InParam from, Vec3::InParam to,
-                    const float t) noexcept {
-  return (from * (1.0f - t)) + (to * t);
-}
+namespace tracer {
 
 constexpr Vec3 reflected(Vec3::InParam vector, Vec3::InParam normal) noexcept {
   // To reflect the supplied vector along the axis of the normal, add as much
@@ -219,9 +148,11 @@ void draw_scene(const int image_width, const int image_height) noexcept {
   }
 }
 
+} // namespace tracer
+
 int main() {
   printf("P6 512 512 255 ");
-  draw_scene(512, 512);
+  tracer::draw_scene(512, 512);
 }
 
 // Copyright 2014-2019 Angelos Evripiotis
