@@ -126,8 +126,6 @@ Vec3 sample(Vec3 position, Vec3 direction) noexcept {
 
 void draw_scene(const int image_width, const int image_height) noexcept {
   constexpr Vec3 camera_forward{0.0f, 0.0f, 1.0f};
-  constexpr Vec3 camera_right{1.0f, 0.0f, 0.0f};
-  constexpr Vec3 camera_up{0.0f, 1.0f, 0.0f};
   constexpr Vec3 camera_pos{0.0f, 10.0f, 0.0f};
 
   const int half_image_width = image_width / 2;
